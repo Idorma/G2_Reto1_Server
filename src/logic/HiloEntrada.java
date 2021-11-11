@@ -91,9 +91,29 @@ public class HiloEntrada extends Thread {
             
         } catch (IOException ex) {
             Logger.getLogger(HiloEntrada.class.getName()).log(Level.SEVERE, null, ex);
-        }  finally {
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(HiloEntrada.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ConnectException ex) {
+            userResponse.setMessage(MessageType.CONNECT_EXCEPTION);
+            Logger.getLogger(HiloEntrada.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SignInException ex) {
+            userResponse.setMessage(MessageType.SIGNIN_EXCEPTION);
+            Logger.getLogger(HiloEntrada.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UpdateException ex) {
+            userResponse.setMessage(MessageType.UPDATE_EXCEPTION);
+            Logger.getLogger(HiloEntrada.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SignUpException ex) {
+            userResponse.setMessage(MessageType.SIGNUP_EXCEPTION);
+            Logger.getLogger(HiloEntrada.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ServerFullException ex) {
+            userResponse.setMessage(MessageType.SERVER_FULL_EXCEPTION);
+            Logger.getLogger(HiloEntrada.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
             App.desconexion();
             try {
+                LOGGER.info("Envio de la respuesta del lado servidor al cliente");
+                out.writeObject(userResponse);
+                LOGGER.info("Cierre de escritura y lectura de objetos");
                 out.close();
                 in.close();
                 so.close();
