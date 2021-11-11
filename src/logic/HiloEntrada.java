@@ -64,7 +64,30 @@ public class HiloEntrada extends Thread {
             in = new ObjectInputStream(so.getInputStream());//recibir mensajes
             out = new ObjectOutputStream(so.getOutputStream());
             LOGGER.info("Comprobacion del hilo de si el servidor esta lleno");
-            
+            if (!max) {
+                LOGGER.info("Recibe el objeto enviado desde el lado cliente");
+                userInfo = (UserInfo) in.readObject();
+                
+                LOGGER.info("Comprueba la peticion hecha por el cliente");
+                if (userInfo.getMessage() == MessageType.SIGNIN_REQUEST) {
+                    LOGGER.info("Peticion de inicio de sesion");
+                    user = getDao().signIn(userInfo.getUser());
+                    LOGGER.info("Peticion completada exitosamente");
+                    userResponse.setMessage(MessageType.SIGNIN_OK);
+                    
+                }
+                if (userInfo.getMessage() == MessageType.SIGNUP_REQUEST) {
+                    LOGGER.info("Peticion de registro");
+                    user = getDao().signUp(userInfo.getUser());
+                    LOGGER.info("Peticion completada exitosamente");
+                    userResponse.setMessage(MessageType.SIGNUP_OK);
+                    
+                }
+                userResponse.setUser(user);
+            } else {
+                
+                throw new ServerFullException("El servidor esta lleno");
+            }
             
         } catch (IOException ex) {
             Logger.getLogger(HiloEntrada.class.getName()).log(Level.SEVERE, null, ex);
