@@ -53,7 +53,7 @@ public class Pool {
     }
 
 
-    public static Pool getInstance() throws ConnectException {
+    public static synchronized Pool getInstance() throws ConnectException {
         LOGGER.info("Se instancia la clase Pool");
         if (pool == null) {
             pool = new Pool();
@@ -62,6 +62,7 @@ public class Pool {
             return pool;
         }
     }
+
 
     public Connection getConnection() throws ConnectException {
         Connection connection = null;
@@ -80,6 +81,22 @@ public class Pool {
         return connection;
     }
 
+
+    public void freeConnection(Connection connection) throws ConnectException {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                LOGGER.info("Se retorna conexion al pool de conexiones.");
+                poolStack.push(connection);
+            } else {
+                throw new ConnectException("Se intento liberar una conexion nula fuera del pool.");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Pool.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ConnectException("Se intento liberar una conexion cerrada fuera del pool.");
+        }
+    }
+
+    
 
     public void closeConnection() {
         LOGGER.info("Cerrando pool de conexiones. Todas las conexiones existentes con cerradas.");
