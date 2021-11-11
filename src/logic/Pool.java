@@ -52,7 +52,12 @@ public class Pool {
         this.contraBD = configFile.getString("DBPASS");
     }
 
-
+    /**
+     * Creamos un metodo para poder instanciar esta clase
+     *
+     * @return pool
+     * @throws ConnectException
+     */
     public static synchronized Pool getInstance() throws ConnectException {
         LOGGER.info("Se instancia la clase Pool");
         if (pool == null) {
@@ -63,7 +68,13 @@ public class Pool {
         }
     }
 
-
+    /**
+     * Metodo para obtener una coneción con la base de datos del pool de
+     * conexiones.
+     *
+     * @return connection
+     * @throws ConnectException
+     */
     public Connection getConnection() throws ConnectException {
         Connection connection = null;
         if (!poolStack.isEmpty()) {
@@ -81,7 +92,12 @@ public class Pool {
         return connection;
     }
 
-
+    /**
+     * Metodo para devolver la conexion a la base de datos al pool de conexiones
+     *
+     * @param connection
+     * @throws ConnectException
+     */
     public void freeConnection(Connection connection) throws ConnectException {
         try {
             if (connection != null && !connection.isClosed()) {
@@ -96,8 +112,11 @@ public class Pool {
         }
     }
 
-    
-
+    /**
+     * Método de cerrado de todas las conexiones previo al cerrado del pool de
+     * conexiones debería llamarse al cerrarse la aplicacion para dejar todas
+     * las conexiones a la BD cerradas.
+     */
     public void closeConnection() {
         LOGGER.info("Cerrando pool de conexiones. Todas las conexiones existentes con cerradas.");
         while (!poolStack.isEmpty()) {
